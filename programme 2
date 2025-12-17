@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <time.h>
+
+int main() {
+    int a, b, c;
+    int a_initial, b_initial;
+    int r, q, compteur = 0;
+    clock_t debut, fin;
+
+    printf("=== Calcul du PGCD et équation ax + by = c ===\n");
+
+    // Lecture de a, b, c
+    printf("Entrez le premier nombre (a) : ");
+    scanf("%d", &a);
+    printf("Entrez le deuxième nombre (b) : ");
+    scanf("%d", &b);
+    printf("Entrez la valeur de c : ");
+    scanf("%d", &c);
+
+    // Sauvegarde des valeurs utilisateurs
+    a_initial = a;
+    b_initial = b;
+
+    // Variables Euclide étendu
+    int x0 = 1, y0 = 0;
+    int x1 = 0, y1 = 1;
+
+    debut = clock();
+
+    // Algorithme d’Euclide étendu
+    while (b != 0) {
+        q = a / b;
+        r = a % b;
+
+        int tmpX = x1;
+        x1 = x0 - q * x1;
+        x0 = tmpX;
+
+        int tmpY = y1;
+        y1 = y0 - q * y1;
+        y0 = tmpY;
+
+        a = b;
+        b = r;
+
+        compteur++;
+    }
+
+    fin = clock();
+
+    int pgcd = a;
+
+    printf("\n=== Résultat ===\n");
+    printf("PGCD(%d, %d) = %d\n", a_initial, b_initial, pgcd);
+    printf("Coefficients de Bézout : x = %d, y = %d\n", x0, y0);
+    printf("Vérification : %d*%d + %d*%d = %d\n",
+           a_initial, x0, b_initial, y0,
+           a_initial * x0 + b_initial * y0);
+
+    // Résolution de ax + by = c
+    if (c % pgcd == 0) {
+        int k = c / pgcd;
+
+        int x_sol = x0 * k;
+        int y_sol = y0 * k;
+
+        printf("\n=== Équation ax + by = c ===\n");
+        printf("Solution particulière : x = %d, y = %d\n", x_sol, y_sol);
+
+        printf("Vérification : %d*%d + %d*%d = %d\n",
+               a_initial, x_sol, b_initial, y_sol,
+               a_initial * x_sol + b_initial * y_sol);
+    } else {
+        printf("\n⚠️  L'équation %d*x + %d*y = %d n’a pas de solution entière.\n",
+               a_initial, b_initial, c);
+    }
+
+    double temps = (double)(fin - debut) / CLOCKS_PER_SEC;
+
+    printf("\n=== Statistiques ===\n");
+    printf("Nombre de divisions : %d\n", compteur);
+    printf("Temps d'exécution : %.6f secondes\n", temps);
+
+    return 0;
+}
