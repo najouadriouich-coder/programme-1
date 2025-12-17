@@ -4,6 +4,7 @@
 int main() {
     int a, b, reste, compteur = 0;
     int a_initial, b_initial;
+    int swapped = 0; // Indicateur de permutation
     clock_t debut, fin;
 
     printf("=== Calcul du PGCD et coefficients de Bézout ===\n");
@@ -18,17 +19,18 @@ int main() {
     a_initial = a;
     b_initial = b;
 
-    // S'assurer que a >= b
-    if (a < b) {
-        int temp = a;
-        a = b;
-        b = temp;
-    }
-
     // Variables pour l'algorithme étendu
-    int x0 = 1, y0 = 0;
-    int x1 = 0, y1 = 1;
+    int x0 = 1, y0 = 0; // Coefficients pour a
+    int x1 = 0, y1 = 1; // Coefficients pour b
     int q, temp;
+
+    // S'assurer que a >= b pour l'algorithme
+    if (a < b) {
+        int temp_val = a;
+        a = b;
+        b = temp_val;
+        swapped = 1; // Marquer la permutation
+    }
 
     debut = clock();
 
@@ -56,8 +58,20 @@ int main() {
 
     printf("\n Résultat final :\n");
     printf("Le PGCD de %d et %d est : %d\n", a_initial, b_initial, a);
-    printf("Coefficients de Bézout : x = %d, y = %d\n", x0, y0);
-    printf("Vérification : %d*%d + %d*%d = %d\n", a_initial, x0, b_initial, y0, a_initial * x0 + b_initial * y0);
+    
+    // Ajuster l'affichage des coefficients selon la permutation
+    if (swapped) {
+        printf("Coefficients de Bézout : %d * %d + %d * %d = %d\n", 
+               b_initial, x0, a_initial, y0, a);
+        printf("Vérification : %d*%d + %d*%d = %d\n", 
+               b_initial, x0, a_initial, y0, b_initial * x0 + a_initial * y0);
+    } else {
+        printf("Coefficients de Bézout : %d * %d + %d * %d = %d\n", 
+               a_initial, x0, b_initial, y0, a);
+        printf("Vérification : %d*%d + %d*%d = %d\n", 
+               a_initial, x0, b_initial, y0, a_initial * x0 + b_initial * y0);
+    }
+    
     if (a == 1) {
         printf("➡ Les deux nombres sont premiers entre eux.\n");
     } else {
@@ -69,8 +83,7 @@ int main() {
     printf("\n=== Statistiques ===\n");
     printf("Nombre d'opérations (divisions) effectuées : %d\n", compteur);
     printf("Temps d'exécution approximatif : %.6f secondes\n", temps);
-    printf("Nombre de variables utilisées (stockage) : 12\n");
-    printf("  → a, b, reste, compteur, a_initial, b_initial, x0, y0, x1, y1, temp, q\n");
+    printf("Nombre de variables utilisées (stockage) : 14\n");
 
     return 0;
 }
